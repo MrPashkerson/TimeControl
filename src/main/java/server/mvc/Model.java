@@ -15,7 +15,7 @@ import java.util.List;
 public class Model implements Observer {
     private List<Listener> listeners;
     private boolean shutDown = false;
-    private int port = 6568;
+    private int port = 0;
     private Socket client = null;
 
     Model() {
@@ -47,47 +47,61 @@ public class Model implements Observer {
 
     // вычисления + notifyListeners("message");
     public void main() throws InterruptedException {
-        try (ServerSocket server = new ServerSocket(port);) {
+        try (ServerSocket server = new ServerSocket(this.port);) {
             server.setReuseAddress(true);
 
-            Runnable clientHandler = () -> {
-                PrintWriter out = null;
-                BufferedReader in = null;
-                do {
-                    try {
-                        client = server.accept();
-                        notifyListeners(": {ip: " + client.getInetAddress().getHostAddress() + "; порт: " + client.getPort() + "};");
-                        while (flag) {
-                            out = new PrintWriter(client.getOutputStream(), true);
-                            in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            Thread clientHandler = null;
 
-//                            sqlQuery mysqlQuery = new sqlQuery();
-//                            String line = in.readLine();
-                        }
 
-//                        if (out != null) {
-//                          out.close();
-//                        }
-//                        if (in != null) {
-//                          in.close();
-//                        }
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                } while (!isShutDown());
-            };
-
-            Thread handler = new Thread(clientHandler);
-            handler.start();
-            handler.join();
-
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
+            do {
+                this.client = server.accept();
+                clientHandler = new Thread(new Model.ClientHandler(this.client));
+                clientHandler.start();
+            } while (!isShutDown());
+        } catch (IOException e) {
+            System.out.println("Server socket was closed.");
         }
     }
 
+    class ClientHandler implements Runnable {
+        private Socket client;
+        ClientHandler(Socket client) {
+            this.client = client;
+        }
+        @Override
+        public void run() {
+            PrintWriter out = null;
+            BufferedReader in = null;
+            boolean flag = true;
+            try {
+                notifyListeners("Connect" + "&" + ": {ip: " + this.client.getInetAddress().getHostAddress() + "; порт: " + this.client.getPort() + "};");
+                while (flag && !isShutDown()) {
+                    out = new PrintWriter(this.client.getOutputStream(), true);
+                    in = new BufferedReader(new InputStreamReader(this.client.getInputStream()));
 
+                    String line = in.readLine();
+                    System.out.printf(" Sent from the client: %s\n", line); // for tests, delete when release
+                    //sqlQuery mysqlQuery = new sqlQuery();
+                    switch (line) {
+                        case "Disconnect":
+                            try {
+                                out.close();
+                                in.close();
+                                this.client.close();
+                                notifyListeners("Disconnect" + "&" + ": {ip: " + this.client.getInetAddress().getHostAddress() + "; порт: " + this.client.getPort() + "};");
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            flag = false;
+                            break;
+                        default:
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
     // геттеры
     boolean isShutDown() {
