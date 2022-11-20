@@ -8,6 +8,7 @@ module server {
 
     exports server.mvc;
     opens server.mvc to javafx.fxml;
+
     exports server;
     opens server to javafx.fxml;
 }
