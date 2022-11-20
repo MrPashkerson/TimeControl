@@ -52,6 +52,7 @@ public class Model implements Observer {
 
             Thread clientHandler = null;
 
+            ServerShutDownHandler serverShutDownHandler = new ServerShutDownHandler(server);
 
             do {
                 this.client = server.accept();
@@ -97,6 +98,33 @@ public class Model implements Observer {
                         default:
                     }
                 }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    class ServerShutDownHandler implements Runnable {
+        Thread thread;
+        ServerSocket serverSocket;
+        public ServerShutDownHandler(ServerSocket serverSocket)
+        {
+            this.serverSocket = serverSocket;
+            this.thread = new Thread(this, "ServerShutDown thread");
+            this.thread.start();
+        }
+        @Override
+        public void run() {
+            while (!isShutDown()) {
+                try {
+                    Thread.sleep(100);
+                }
+                catch (InterruptedException e) {
+                    System.out.println("Caught:" + e);
+                }
+            }
+            try {
+                this.serverSocket.close();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
