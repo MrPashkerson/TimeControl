@@ -1,8 +1,31 @@
 package server;
 
-public class Application {
+import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+
+import java.io.IOException;
+
+public class Application extends javafx.application.Application {
+    @Override
+    public void start(Stage stage) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("/server/server.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 475, 321);
+        stage.setTitle("TimeControl Server");
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent windowEvent) {
+                stage.close();
+                System.exit(0);
+            }
+        });
+        stage.setScene(scene);
+        stage.show();
+    }
+
     public static void main(String[] args) {
-        Thread guiLaunch = new Thread(new GUIThread());
-        guiLaunch.start();
+        launch();
     }
 }
