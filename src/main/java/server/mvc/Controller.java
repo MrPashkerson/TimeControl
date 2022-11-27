@@ -4,7 +4,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
-import java.net.SocketException;
 import java.util.regex.Pattern;
 
 public class Controller extends View {

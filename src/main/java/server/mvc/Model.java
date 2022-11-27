@@ -45,7 +45,7 @@ public class Model implements Observer {
         this.port = port;
     }
 
-    // вычисления + notifyListeners("message");
+    // вычисления
     public void main() throws InterruptedException {
         try (ServerSocket server = new ServerSocket(this.port);) {
             server.setReuseAddress(true);

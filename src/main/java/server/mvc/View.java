@@ -6,7 +6,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import server.mvc.observer.Listener;
 
-import java.net.SocketException;
 import java.util.Objects;
 
 public class View implements Listener {
