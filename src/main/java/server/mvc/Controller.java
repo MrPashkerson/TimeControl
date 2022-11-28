@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
+import java.sql.SQLException;
 import java.util.regex.Pattern;
 
 public class Controller extends View {
@@ -17,7 +18,7 @@ public class Controller extends View {
     public TextField fieldPort;
 
     @FXML
-    protected void onStartButtonClick() throws InterruptedException {
+    protected void onStartButtonClick() {
         elListView.getItems().clear();
         btnStart.setDisable(true);
         btnStop.setDisable(false);
@@ -46,7 +47,7 @@ public class Controller extends View {
             model.setPort(port);
             try {
                 model.main();
-            } catch (InterruptedException e) {
+            } catch (InterruptedException | SQLException e) {
                 throw new RuntimeException(e);
             }
         }

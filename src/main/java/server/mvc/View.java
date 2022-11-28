@@ -11,7 +11,7 @@ import java.util.Objects;
 public class View implements Listener {
     Model model = new Model();
     @FXML
-    ListView<String> elListView = new ListView<String>();
+    ListView<String> elListView = new ListView<>();
     @FXML
     public TextField fieldClientsConnected;
 
