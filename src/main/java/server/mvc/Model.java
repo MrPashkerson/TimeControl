@@ -102,6 +102,7 @@ public class Model implements Observer {
                         case "getAllPosition" -> out.println(getAllPosition(this.mysqlQuery));
                         case "getAllEquipment" -> out.println(getAllEquipment(this.mysqlQuery));
                         case "getOccupiedEquipment" -> out.println(getOccupiedEquipment(this.mysqlQuery));
+                        case "getAllUserStat" -> out.println(getAllUserStat(this.mysqlQuery));
                         default -> {
                             String[] args = line.split("&");
                             switch (args[0]) {
@@ -111,6 +112,7 @@ public class Model implements Observer {
                                 case "deleteUser" -> deleteUser(this.mysqlQuery, args[1]);
                                 case "generateReport" -> out.println(generateReport(this.mysqlQuery, args[1]));
                                 case "searchUser" -> out.println(searchUser(this.mysqlQuery, args[1]));
+                                case "addStat" -> addStat(this.mysqlQuery, args[1]);
                                 default -> {
                                 }
                             }
@@ -133,6 +135,11 @@ public class Model implements Observer {
 
         public void logout() {
             user = null;
+        }
+
+        public void addStat(sqlQuery mysqlQuery, String data) {
+            String[] args = data.split("; ");
+            mysqlQuery.insertRecordStatistics(args[0], args[1], Integer.parseInt(args[2]), args[3]);
         }
 
         public String authorization(sqlQuery mysqlQuery, String login, String password) throws SQLException {
@@ -182,6 +189,11 @@ public class Model implements Observer {
 
         public String getAllEmployee(sqlQuery mysqlQuery) throws SQLException {
             return mysqlQuery.selectAllEmployee();
+        }
+
+        public String getAllUserStat(sqlQuery mysqlQuery) throws SQLException {
+            String comp_id = user.split("; ")[7];
+            return mysqlQuery.selectStatistics(comp_id);
         }
 
         public String getAllDepartment(sqlQuery mysqlQuery) throws SQLException {

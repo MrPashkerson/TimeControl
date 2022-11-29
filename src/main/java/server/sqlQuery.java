@@ -7,7 +7,7 @@ public class sqlQuery {
     private static final String PASSWORD = "toor";
     private static final String URL = "jdbc:mysql://localhost:3306/mysql";
     public static final String SELECT_QUERY_DEPARTMENT = "SELECT * FROM department";
-    public static final String INSERT_QUERY_STATISTICS = "INSERT INTO statistics (app_name, app_time, comp_id) VALUES (?, ?, ?)";
+    public static final String INSERT_QUERY_STATISTICS = "INSERT INTO statistics (app_name, app_time, comp_id, app_date) VALUES (?, ?, ?, ?)";
     public static final String SELECT_QUERY_STATISTICS = "SELECT * FROM statistics WHERE comp_id = ";
     public static final String UPDATE_QUERY_EQUIPMENT = "UPDATE equipment SET employee_id = ? WHERE comp_id = ?";
     public static final String CLEAR_QUERY_EQUIPMENT = "UPDATE equipment SET employee_id = NULL WHERE employee_id = ?";
@@ -36,11 +36,12 @@ public class sqlQuery {
         connection.close();
     }
 
-    public void insertRecordStatistics(String app_name, String app_time, int comp_id) {
+    public void insertRecordStatistics(String app_name, String app_time, int comp_id, String app_date) {
         try(PreparedStatement preparedStatement = connection.prepareStatement(INSERT_QUERY_STATISTICS)) {
             preparedStatement.setString(1, app_name);
             preparedStatement.setString(2, app_time);
             preparedStatement.setInt(3, comp_id);
+            preparedStatement.setString(4, app_date);
 
             System.out.println(preparedStatement);
             preparedStatement.executeUpdate();
@@ -212,7 +213,7 @@ public class sqlQuery {
         ResultSet resultSet = statement.executeQuery(SELECT_QUERY_STATISTICS + comp_id);
         StringBuilder result = new StringBuilder();
         while (resultSet.next()) {
-            result.append(resultSet.getString(1)).append("; ").append(resultSet.getString(2)).append("; ").append(resultSet.getString(3)).append("; ").append(resultSet.getString(4)).append("&");
+            result.append(resultSet.getString(1)).append("; ").append(resultSet.getString(2)).append("; ").append(resultSet.getString(3)).append("; ").append(resultSet.getString(4)).append("; ").append(resultSet.getString(5)).append("&");
         }
         resultSet.close();
         if(result.toString().equals("")) {
