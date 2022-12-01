@@ -12,6 +12,8 @@
 - Java
 - JavaFX
 - Maven
+- MySQL
+- SQL
 
 **Additionally:**
 
