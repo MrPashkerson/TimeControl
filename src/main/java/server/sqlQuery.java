@@ -16,7 +16,9 @@ public class sqlQuery {
     public static final String INSERT_QUERY_EMPLOYEE = "INSERT INTO employee (username, lastname, firstname, password, department_id, position_id, comp_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
     public static final String UPDATE_QUERY_EMPLOYEE = "UPDATE employee SET username = ?, lastname = ?, firstname = ?, password = ?, department_id = ?, position_id = ?, comp_id = ? WHERE employee_id = ?";
     public static final String DELETE_QUERY_EMPLOYEE = "DELETE FROM employee WHERE employee_id = ?";
+    public static final String DELETE_QUERY_STAT = "DELETE FROM statistics WHERE comp_id = ?";
     public static final String SELECT_QUERY_EMPLOYEE = "SELECT * FROM employee";
+    public static final String SELECT_QUERY_EMPLOYEE_COMP = "SELECT * FROM employee";
     public static final String SELECT_QUERY_POSITION = "SELECT * FROM position";
     private static Statement statement;
     private static Connection connection;
@@ -126,6 +128,29 @@ public class sqlQuery {
     public void deleteRecordEmployee(int employee_id) {
         try(PreparedStatement preparedStatement = connection.prepareStatement(DELETE_QUERY_EMPLOYEE)) {
             preparedStatement.setInt(1, employee_id);
+
+            System.out.println(preparedStatement);
+            preparedStatement.executeUpdate();
+            try {
+                preparedStatement.close();
+            } catch (SQLException ignored) {}
+        } catch (SQLException e) {
+            printSQLException(e);
+        }
+    }
+
+    public void deleteRecordStat(int employee_id) throws SQLException {
+        ResultSet resultSet = statement.executeQuery(SELECT_QUERY_EMPLOYEE_COMP + " WHERE employee_id = " + employee_id);
+        StringBuilder result = new StringBuilder();
+        while (resultSet.next()) {
+            result.append(resultSet.getString(8));
+        }
+        resultSet.close();
+        if(result.toString().equals("")) {
+            result = new StringBuilder();
+        }
+        try(PreparedStatement preparedStatement = connection.prepareStatement(DELETE_QUERY_STAT)) {
+            preparedStatement.setInt(1, Integer.parseInt(result.toString()));
 
             System.out.println(preparedStatement);
             preparedStatement.executeUpdate();

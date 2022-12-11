@@ -11,7 +11,6 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -55,13 +54,14 @@ public class Model implements Observer {
             server.setReuseAddress(true);
 
             Thread clientHandler;
+            Socket client;
 
             ServerShutDownHandler serverShutDownHandler = new ServerShutDownHandler(server);
             do {
-                Socket client = server.accept();
+                client = server.accept();
                 clientHandler = new Thread(new Model.ClientHandler(client, mysqlQuery));
                 clientHandler.start();
-                clientHandler.join();
+                //clientHandler.join();
             } while (!isShutDown());
         } catch (IOException e) {
             System.out.println("Server socket was closed.");
@@ -172,7 +172,9 @@ public class Model implements Observer {
             mysqlQuery.updateRecordEquipment(Integer.parseInt(args[0]), Integer.parseInt(args[7]));
         }
 
-        public void deleteUser(sqlQuery mysqlQuery, String employee_id) {
+        public void deleteUser(sqlQuery mysqlQuery, String employee_id) throws SQLException {
+            mysqlQuery.deleteRecordStat(Integer.parseInt(employee_id));
+            mysqlQuery.clearRecordEquipment(Integer.parseInt(employee_id));
             mysqlQuery.deleteRecordEmployee(Integer.parseInt(employee_id));
         }
 
